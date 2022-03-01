@@ -1,0 +1,51 @@
+{
+  "raspberry": {
+    "name": "demo",
+    "model": "3a"
+  },
+  "server": {
+    "debug": false
+  },
+  "network": {
+    "ip": "localhost",
+    "port": 4243
+  },
+  "security": {
+    "useToken": true,
+    "token": "test"
+  },
+  "hardware": {
+    "general": {
+      "enabled": false,
+      "gpioSetWarnings": true
+    },
+    "rfDevice": {
+      "devicePin": 18,
+      "repeat": 40
+    },
+    "rgbLed": {
+      "enabled": false,
+      "pinOut": {
+        "r": 16,
+        "g": 20,
+        "b": 21
+      }
+    },
+    "relay": {
+      "pinOut": {
+        "r1": 21,
+        "c2": 2
+      }
+    }
+  },
+  "outletCodes": {
+    "s1": {
+      "on": 31415,
+      "off": 31415
+    },
+    "s2": {
+      "on": 31415,
+      "off": 31415
+    }
+  }
+}
