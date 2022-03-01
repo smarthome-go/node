@@ -84,7 +84,6 @@ def request_handler():
         logger.log(req, 1)
         if req["content"] == "power" and 'switch' in req and 'turnOn' in req:
             if req['switch'] in outlet_codes and req['switch'][0] != 'r':
-                set_color('green')
                 handle_outlet(req['switch'], req['turnOn'], device_pin, device_repeat, outlet_codes)
             elif req['switch'][0] == 'r':
                 if (req['switch'] in relay_codes):
