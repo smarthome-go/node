@@ -3,13 +3,12 @@ from time import sleep
 import requests
 from datetime import datetime
 
-# Sets up GPIO
 PinIn = 26
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PinIn, GPIO.IN)
 
 
-def ConvertHex(BinVal):  # Converts binary data to hex
+def ConvertHex(BinVal):
     tmpB2 = int(str(BinVal), 2)
     return hex(tmpB2)
 
@@ -21,7 +20,9 @@ def getData():  # Pulls data from sensor
     previousValue = 0  # The previous pin state
     value = GPIO.input(PinIn)  # Current pin state
     while value:  # Waits until pin is pulled low
+        sleep(0.0001) # This sleep decreases CPU utilization immensely
         value = GPIO.input(PinIn)
+        
     startTime = datetime.now()  # Sets start time
     while True:
         if value != previousValue:  # Waits until change in state occurs
@@ -54,7 +55,8 @@ def getData():  # Pulls data from sensor
 
 def runTest():  # Actually runs the test
     # Takes samples
-    command = ConvertHex(getData())
+    data = getData()
+    command = ConvertHex(data)
     print("Hex value: " + str(command))  # Shows results on the screen
     return command
 
