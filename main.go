@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/MikMuellerDev/smarthome-hw/api"
 	"github.com/MikMuellerDev/smarthome-hw/core/config"
 	"github.com/MikMuellerDev/smarthome-hw/core/log"
 )
@@ -12,5 +16,8 @@ func main() {
 	if err := config.ReadConfigFile(); err != nil {
 		log.Fatal("Failed to read config file: ", err.Error())
 	}
-	config.SetVersion("v0.0.1")
+	config.Version = "v0.0.1"
+	r := api.NewRouter()
+	http.Handle("/", r)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.GetConfig().Port), r).Error())
 }

@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/MikMuellerDev/smarthome-hw/core/config"
 	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 /*
@@ -29,5 +31,16 @@ func AuthRequired(handler http.HandlerFunc) http.HandlerFunc {
 			})
 			return
 		}
+		if err := bcrypt.CompareHashAndPassword([]byte(config.GetConfig().TokenHash), []byte(token)); err == nil {
+			handler.ServeHTTP(w, r)
+			return
+		}
+		log.Debug("invalid token provided, rejecting request")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(Response{
+			Success: false,
+			Message: "unauthorized",
+			Error:   "invalid credentials",
+		})
 	}
 }

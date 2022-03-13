@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/MikMuellerDev/smarthome-hw/core/config"
+import (
+	"runtime"
+
+	"github.com/MikMuellerDev/smarthome-hw/core/config"
+)
 
 type Debug struct {
 	Version              string `json:"version"`
@@ -11,8 +15,8 @@ type Debug struct {
 func GetDebugInfo() Debug {
 	configuration := config.GetConfig()
 	return Debug{
-		Version:              configuration.Version,
+		Version:              config.Version,
 		Production:           configuration.Production,
-		RunningOnRaspberryPi: configuration.GOARCH == "arm",
+		RunningOnRaspberryPi: runtime.GOARCH == "arm",
 	}
 }
