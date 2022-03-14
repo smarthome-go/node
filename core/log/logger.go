@@ -70,4 +70,9 @@ func Error(opts ...string) {
 
 func Fatal(opts ...string) {
 	genericLogger(logrus.FatalLevel, opts...)
+	output := ""
+	for _, opt := range opts {
+		output += opt
+	}
+	panic(output)
 }

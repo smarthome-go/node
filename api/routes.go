@@ -16,13 +16,18 @@ type Response struct {
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/debug", debugInfo).Methods("GET")
+	// Healthcheck used by uptime-monitoring services, for example Uptime-Kuma
 	r.HandleFunc("/health", healthCheck).Methods("GET")
 
+	r.HandleFunc("/debug", AuthRequired(debugInfo)).Methods("GET")
+	r.HandleFunc("/switches", AuthRequired(getSwitches)).Methods("GET")
 	r.HandleFunc("/token", AuthRequired(updateToken)).Methods("PUT")
+
+	// Handles power request via the connected 433mhz sender
+	r.HandleFunc("/power", AuthRequired(setPower)).Methods("POST")
 
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 	r.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowedHandler)
-	log.Debug("Initialized Router.")
+	log.Debug("Initialized Router")
 	return r
 }

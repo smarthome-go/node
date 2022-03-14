@@ -28,3 +28,8 @@ go.work
 
 # Config file
 config.json
+
+
+# build files
+bin
+build

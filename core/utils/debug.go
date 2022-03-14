@@ -7,16 +7,18 @@ import (
 )
 
 type Debug struct {
-	Version              string `json:"version"`
-	Production           bool   `json:"production"`
-	RunningOnRaspberryPi bool   `json:"runningOnRaspberryPi"`
+	Version              string          `json:"version"`
+	Hardware             config.Hardware `json:"hardware"`
+	RunningOnRaspberryPi bool            `json:"runningOnRaspberryPi"`
+	CpuCount             uint8           `json:"cpuCount"`
 }
 
 func GetDebugInfo() Debug {
 	configuration := config.GetConfig()
 	return Debug{
 		Version:              config.Version,
-		Production:           configuration.Production,
+		Hardware:             configuration.Hardware,
 		RunningOnRaspberryPi: runtime.GOARCH == "arm",
+		CpuCount:             uint8(runtime.NumCPU()),
 	}
 }
