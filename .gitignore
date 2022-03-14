@@ -31,5 +31,5 @@ config.json
 
 
 # build files
-bin
+smarthome-hw-bin
 build
