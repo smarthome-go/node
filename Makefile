@@ -17,7 +17,7 @@ clean:
 
 cleanall: clean
 	rm -rf build
-	rm -rf config
+	rm -rf config.json
 
 # Builds
 build: all linux clean

@@ -1,11 +1,14 @@
 #!/bin/bash
 
-#  Usage:
-# ./update_token.sh "old-token" "new-token"
+echo -e "Enter \x1b[1;31mcurrent\x1b[1;0m token:"
+read -rs OLD_TOKEN
+
+echo -e "Enter \x1b[1;32mnew\x1b[1;0m token:"
+read -rs NEW_TOKEN
 
 curl --request PUT \
-  --url "http://localhost:8081/token?token=$1" \
+  --url "http://localhost:8081/token?token=$OLD_TOKEN" \
   --header 'Content-Type: application/json' \
   --data "{
-	\"token\": \"$2\"
+	\"token\": \"$NEW_TOKEN\"
 }"
