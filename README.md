@@ -14,3 +14,17 @@ In order to change the default token, use the provided bash script:
 ```bash
 ./update_token.sh "old_token" "new_token"
 ```
+
+## Api
+
+To send a power request, make a **POST** request to a similar url with a similar request body encoded as `application/json`
+```
+http://localhost:8081/power?token=smarthome
+```
+
+```json
+{
+	"switch": "s1",
+	"power": true
+}
+```

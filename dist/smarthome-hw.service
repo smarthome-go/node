@@ -1,0 +1,13 @@
+[Unit]
+Description=hardware controller for smarthome
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/usr/bin/smarthome-hw/
+ExecStart=/usr/bin/smarthome-hw/smarthome-hw
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

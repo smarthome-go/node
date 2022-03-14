@@ -1,8 +1,9 @@
-appname := smarthome-hw-v0.0.2-beta
+appname := smarthome-hw
+version := v0.0.2-beta
 sources := $(wildcard *.go)
 
-build = mkdir -p smarthome-hw-bin && cp update_token.sh smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
-tar = mkdir -p build && tar -cvzf ./$(appname)_$(1)_$(2).tar.gz smarthome-hw-bin && mv $(appname)_$(1)_$(2).tar.gz build
+build = mkdir -p smarthome-hw-bin && cp -r dist/* smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
+tar = mkdir -p build && tar -cvzf ./$(appname)_$(version)_$(1)_$(2).tar.gz smarthome-hw-bin && mv $(appname)_$(version)_$(1)_$(2).tar.gz build
 
 .PHONY: all linux
 
