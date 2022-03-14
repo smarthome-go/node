@@ -1,4 +1,4 @@
-appname := smarthome-hw-v0.0.2
+appname := smarthome-hw-v0.0.2-beta
 sources := $(wildcard *.go)
 
 build = mkdir -p smarthome-hw-bin && cp update_token.sh smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
