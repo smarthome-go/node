@@ -26,6 +26,9 @@ func NewRouter() *mux.Router {
 	// Handles power request via the connected 433mhz sender
 	r.HandleFunc("/power", AuthRequired(setPower)).Methods("POST")
 
+	// Handles bare codes and sends them via the connected 433mhz sender
+	r.HandleFunc("/code", AuthRequired(sendCode)).Methods("POST")
+
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 	r.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowedHandler)
 	log.Debug("Initialized Router")

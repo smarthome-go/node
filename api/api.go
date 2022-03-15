@@ -19,6 +19,10 @@ type PowerRequest struct {
 	PowerOn bool   `json:"power"`
 }
 
+type CodeRequest struct {
+	Code int `json:"code"`
+}
+
 // Returns general-purpose debugging information
 func debugInfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(utils.GetDebugInfo())
@@ -116,6 +120,58 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 			Success: false,
 			Message: "bad request",
 			Error:   "the desired switch could not be matched to a code, is it valid?",
+		})
+		return
+	case nil:
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(Response{
+			Success: true,
+			Message: "power request successful",
+		})
+		return
+	default:
+		log.Error("Failed to match error return value for power request: ", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
+			Success: false,
+			Message: "internal server error",
+			Error:   "could not match return value of hardware power request",
+		})
+		return
+	}
+}
+
+// Accept a bare code and sends it (used for testing)
+func sendCode(w http.ResponseWriter, r *http.Request) {
+	// Decode the request body
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	var request CodeRequest
+	if err := decoder.Decode(&request); err != nil || request.Code == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(Response{
+			Success: false,
+			Message: "bad request",
+			Error:   "invalid request body",
+		})
+		return
+	}
+	err := firmware.SendCode(request.Code)
+	switch err {
+	case firmware.ErrBlocked:
+		w.WriteHeader(http.StatusLocked)
+		json.NewEncoder(w).Encode(Response{
+			Success: false,
+			Message: "currently blocked",
+			Error:   "the sender's hardware is currently busy",
+		})
+		return
+	case firmware.ErrDisabled:
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(Response{
+			Success: false,
+			Message: "currently disabled / maintenance mode",
+			Error:   "the hardware is currently disabled",
 		})
 		return
 	case nil:

@@ -49,3 +49,22 @@ func SetPower(switchId string, powerOn bool) error {
 	}
 	return ErrNoCode
 }
+
+// Sends a code without any preproccessing
+func SendCode(code int) error {
+	if blocked {
+		log.Warn("Can not send code right now: the sender is currently busy")
+		return ErrBlocked
+	}
+	if !config.GetConfig().Hardware.HardwareEnabled {
+		log.Warn("Can not send code right now: the hardware is currently disabled")
+		return ErrDisabled
+	}
+	blocked = true
+	if err := sender.Send(code); err != nil {
+		log.Error("Failed to send code: ", err.Error())
+		return err
+	}
+	blocked = false
+	return nil
+}
