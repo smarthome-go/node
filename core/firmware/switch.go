@@ -29,6 +29,7 @@ func SetPower(switchId string, powerOn bool) error {
 		return ErrDisabled
 	}
 	blocked = true
+	Init()
 	switches := config.GetConfig().Switches
 	for _, switchItem := range switches {
 		if switchItem.Id == switchId {
@@ -43,6 +44,7 @@ func SetPower(switchId string, powerOn bool) error {
 				return err
 			}
 			log.Info(fmt.Sprintf("Successfully send code %d (Switch: %s PowerOn: %t)", code, switchId, powerOn))
+			Free()
 			blocked = false
 			return nil
 		}
@@ -61,10 +63,12 @@ func SendCode(code int) error {
 		return ErrDisabled
 	}
 	blocked = true
+	Init()
 	if err := sender.Send(code); err != nil {
 		log.Error("Failed to send code: ", err.Error())
 		return err
 	}
+	Free()
 	blocked = false
 	return nil
 }
