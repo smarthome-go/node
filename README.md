@@ -1,4 +1,4 @@
-# smarthome-hw
+# Smarthome-hw
  Hardware interface for the Smarthome server
 
 ![smarthome-hw logo](./icon/readme.png)
