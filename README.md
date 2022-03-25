@@ -3,9 +3,6 @@
 
 ![smarthome-hw logo](./icon/readme.png)
 
-### The project is currently in the rewrite phase. 🚧
-~~This project is deprecated and will be rewritten in a more reliable language soon.~~
-
 ### Token 🔑
 In order to guarantee a safe communication between the `smarthome` server and the `smarthome-hw` server, a token is required.
 When this application is first started, a *random* token will be generated and printed to the server's logs (**but not to file**).
