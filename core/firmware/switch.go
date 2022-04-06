@@ -21,19 +21,14 @@ var (
 // Returns an error if the sender is uninitialized or the switch has no entry in the config file
 func SetPower(switchId string, powerOn bool) error {
 	if blocked {
-		log.Warn("Can not send code right now: the sender is currently busy")
+		log.Trace("Can not send code right now: the sender is currently busy")
 		return ErrBlocked
 	}
 	if !config.GetConfig().Hardware.HardwareEnabled {
-		log.Warn("Can not send code right now: the hardware is currently disabled")
+		log.Trace("Can not send code right now: the hardware is currently disabled")
 		return ErrDisabled
 	}
 	blocked = true
-	if err := Init(); err != nil {
-		log.Error("Initializing sender failed: ", err.Error())
-		blocked = false
-		return err
-	}
 	switches := config.GetConfig().Switches
 	for _, switchItem := range switches {
 		if switchItem.Id == switchId {
@@ -48,12 +43,7 @@ func SetPower(switchId string, powerOn bool) error {
 				blocked = false
 				return err
 			}
-			log.Info(fmt.Sprintf("Successfully send code %d (Switch: %s PowerOn: %t)", code, switchId, powerOn))
-			if err := Free(); err != nil {
-				log.Error("Deactivated sender after transmit failed: ", err.Error())
-				blocked = false
-				return err
-			}
+			log.Trace(fmt.Sprintf("Successfully send code %d (Switch: %s PowerOn: %t)", code, switchId, powerOn))
 			blocked = false
 			return nil
 		}
@@ -65,26 +55,16 @@ func SetPower(switchId string, powerOn bool) error {
 // Sends a code without any preproccessing
 func SendCode(code int) error {
 	if blocked {
-		log.Warn("Can not send code right now: the sender is currently busy")
+		log.Trace("Can not send code right now: the sender is currently busy")
 		return ErrBlocked
 	}
 	if !config.GetConfig().Hardware.HardwareEnabled {
-		log.Warn("Can not send code right now: the hardware is currently disabled")
+		log.Trace("Can not send code right now: the hardware is currently disabled")
 		return ErrDisabled
 	}
 	blocked = true
-	if err := Init(); err != nil {
-		log.Error("Initializing sender failed: ", err.Error())
-		blocked = false
-		return err
-	}
 	if err := sender.Send(code); err != nil {
 		log.Error("Failed to send code: ", err.Error())
-		blocked = false
-		return err
-	}
-	if err := Free(); err != nil {
-		log.Error("Deactivated sender failed: ", err.Error())
 		blocked = false
 		return err
 	}
