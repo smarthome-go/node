@@ -34,7 +34,11 @@ func main() {
 				log.Fatal("Failed to deactivate hardware after initialization failure", err.Error())
 			}
 		}
-		defer firmware.Free()
+		defer func() {
+			if err := firmware.Free(); err != nil {
+				log.Fatal("Could not deactivate sender: ", err.Error())
+			}
+		}()
 	}
 	log.Info(fmt.Sprintf("Smarthome-hw %s is running on http://localhost:%d", config.Version, config.GetConfig().Port))
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.GetConfig().Port), r).Error())

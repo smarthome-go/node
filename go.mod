@@ -3,14 +3,12 @@ module github.com/MikMuellerDev/smarthome-hw
 go 1.17
 
 require (
+	github.com/MikMuellerDev/rpirf v0.1.1
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220313003712-b769efc7c000
 )
 
-require (
-	github.com/MikMuellerDev/rpirf v0.1.1 // indirect
-	github.com/stianeikeland/go-rpio/v4 v4.6.0 // indirect
-)
+require github.com/stianeikeland/go-rpio/v4 v4.6.0 // indirect
 
 require (
 	github.com/gorilla/mux v1.8.0

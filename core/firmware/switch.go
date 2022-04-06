@@ -29,7 +29,11 @@ func SetPower(switchId string, powerOn bool) error {
 		return ErrDisabled
 	}
 	blocked = true
-	Init()
+	if err := Init(); err != nil {
+		log.Error("Initializing sender failed: ", err.Error())
+		blocked = false
+		return err
+	}
 	switches := config.GetConfig().Switches
 	for _, switchItem := range switches {
 		if switchItem.Id == switchId {
@@ -41,14 +45,20 @@ func SetPower(switchId string, powerOn bool) error {
 			}
 			if err := sender.Send(code); err != nil {
 				log.Error("Failed to send code: ", err.Error())
+				blocked = false
 				return err
 			}
 			log.Info(fmt.Sprintf("Successfully send code %d (Switch: %s PowerOn: %t)", code, switchId, powerOn))
-			Free()
+			if err := Free(); err != nil {
+				log.Error("Deactivated sender after transmit failed: ", err.Error())
+				blocked = false
+				return err
+			}
 			blocked = false
 			return nil
 		}
 	}
+	blocked = false
 	return ErrNoCode
 }
 
@@ -63,12 +73,21 @@ func SendCode(code int) error {
 		return ErrDisabled
 	}
 	blocked = true
-	Init()
-	if err := sender.Send(code); err != nil {
-		log.Error("Failed to send code: ", err.Error())
+	if err := Init(); err != nil {
+		log.Error("Initializing sender failed: ", err.Error())
+		blocked = false
 		return err
 	}
-	Free()
+	if err := sender.Send(code); err != nil {
+		log.Error("Failed to send code: ", err.Error())
+		blocked = false
+		return err
+	}
+	if err := Free(); err != nil {
+		log.Error("Deactivated sender failed: ", err.Error())
+		blocked = false
+		return err
+	}
 	blocked = false
 	return nil
 }

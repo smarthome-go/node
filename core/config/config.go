@@ -9,8 +9,9 @@ import (
 	"io/ioutil"
 	"math"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/MikMuellerDev/smarthome-hw/core/log"
 )
 
 type Config struct {
@@ -176,7 +177,9 @@ Token-Related
 // Returns a random string of a given length that is encoded in BS64
 func randomBase64String(length int) string {
 	buff := make([]byte, int(math.Ceil(float64(length)/float64(1.33333333333))))
-	rand.Read(buff)
+	if _, err := rand.Read(buff); err != nil {
+		log.Error("Encoding json failed: ", err.Error())
+	}
 	str := base64.RawURLEncoding.EncodeToString(buff)
 	return str[:length] // strip 1 extra character we get from odd length results
 }

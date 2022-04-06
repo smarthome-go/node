@@ -25,7 +25,9 @@ type CodeRequest struct {
 
 // Returns general-purpose debugging information
 func debugInfo(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(utils.GetDebugInfo())
+	if err := json.NewEncoder(w).Encode(utils.GetDebugInfo()); err != nil {
+		log.Error("Encoding json failed: ", err.Error())
+	}
 }
 
 // Returns a service unavailable if the hardware is disabled
@@ -44,38 +46,48 @@ func updateToken(w http.ResponseWriter, r *http.Request) {
 	var request UpdateTokenRequest
 	if err := decoder.Decode(&request); err != nil || request.Token == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Success: false, Message: "bad request", Error: "invalid request body"})
+		if err := json.NewEncoder(w).Encode(Response{Success: false, Message: "bad request", Error: "invalid request body"}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 	hash, err := config.GenerateTokenHash(request.Token)
 	if err != nil {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "failed to update token",
 			Error:   "could not generate token",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 	config.SetHash(hash)
 	if err := config.WriteConfig(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "failed to update token",
 			Error:   "could not write generated token to config file",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
-	json.NewEncoder(w).Encode(Response{
+	if err := json.NewEncoder(w).Encode(Response{
 		Success: true,
 		Message: "successfully updated token",
-	})
+	}); err != nil {
+		log.Error("Encoding json failed: ", err.Error())
+	}
 }
 
 // Returns all switches, also their internal 433mhz codes
 func getSwitches(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(config.GetConfig().Switches)
+	if err := json.NewEncoder(w).Encode(config.GetConfig().Switches); err != nil {
+		log.Error("Encoding json failed: ", err.Error())
+	}
 }
 
 // Main function used to communicate with the 433mhz hardware
@@ -86,11 +98,13 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 	var request PowerRequest
 	if err := decoder.Decode(&request); err != nil || request.Switch == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "bad request",
 			Error:   "invalid request body",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 	err := firmware.SetPower(
@@ -100,43 +114,53 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 	switch err {
 	case firmware.ErrBlocked:
 		w.WriteHeader(http.StatusLocked)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently blocked",
 			Error:   "the sender's hardware is currently busy",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	case firmware.ErrDisabled:
 		w.WriteHeader(http.StatusServiceUnavailable)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently disabled / maintenance mode",
 			Error:   "the hardware is currently disabled",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	case firmware.ErrNoCode:
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "bad request",
 			Error:   "the desired switch could not be matched to a code, is it valid?",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	case nil:
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: true,
 			Message: "power request successful",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	default:
 		log.Error("Failed to match error return value for power request: ", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "internal server error",
 			Error:   "could not match return value of hardware power request",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 }
@@ -149,46 +173,56 @@ func sendCode(w http.ResponseWriter, r *http.Request) {
 	var request CodeRequest
 	if err := decoder.Decode(&request); err != nil || request.Code == 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "bad request",
 			Error:   "invalid request body",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 	err := firmware.SendCode(request.Code)
 	switch err {
 	case firmware.ErrBlocked:
 		w.WriteHeader(http.StatusLocked)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently blocked",
 			Error:   "the sender's hardware is currently busy",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	case firmware.ErrDisabled:
 		w.WriteHeader(http.StatusServiceUnavailable)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently disabled / maintenance mode",
 			Error:   "the hardware is currently disabled",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	case nil:
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: true,
 			Message: "power request successful",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	default:
 		log.Error("Failed to match error return value for power request: ", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
+		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "internal server error",
 			Error:   "could not match return value of hardware power request",
-		})
+		}); err != nil {
+			log.Error("Encoding json failed: ", err.Error())
+		}
 		return
 	}
 }
