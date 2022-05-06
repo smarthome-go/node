@@ -3,7 +3,7 @@ package utils
 import (
 	"runtime"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
+	"github.com/smarthome-go/node/core/config"
 )
 
 type Debug struct {

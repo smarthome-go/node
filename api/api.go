@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
-	"github.com/MikMuellerDev/smarthome-hw/core/firmware"
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
-	"github.com/MikMuellerDev/smarthome-hw/core/utils"
+	"github.com/smarthome-go/node/core/config"
+	"github.com/smarthome-go/node/core/firmware"
+	"github.com/smarthome-go/node/core/log"
+	"github.com/smarthome-go/node/core/utils"
 )
 
 type UpdateTokenRequest struct {

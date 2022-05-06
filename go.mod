@@ -1,10 +1,10 @@
-module github.com/MikMuellerDev/smarthome-hw
+module github.com/smarthome-go/node
 
-go 1.17
+go 1.18
 
 require (
-	github.com/MikMuellerDev/rpirf v0.1.1
 	github.com/sirupsen/logrus v1.8.1
+	github.com/smarthome-go/rpirf v1.0.0
 	golang.org/x/crypto v0.0.0-20220313003712-b769efc7c000
 )
 

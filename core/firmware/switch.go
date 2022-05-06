@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/core/config"
+	"github.com/smarthome-go/node/core/log"
 )
 
 // Acts as a global lock, in this case if a code is being sent in order to prevent interrupts

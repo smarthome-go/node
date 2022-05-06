@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/MikMuellerDev/smarthome-hw/api"
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
-	"github.com/MikMuellerDev/smarthome-hw/core/firmware"
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/api"
+	"github.com/smarthome-go/node/core/config"
+	"github.com/smarthome-go/node/core/firmware"
+	"github.com/smarthome-go/node/core/log"
 )
 
 func main() {

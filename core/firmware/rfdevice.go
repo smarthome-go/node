@@ -3,9 +3,9 @@ package firmware
 import (
 	"fmt"
 
-	"github.com/MikMuellerDev/rpirf"
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/core/config"
+	"github.com/smarthome-go/node/core/log"
+	"github.com/smarthome-go/rpirf"
 )
 
 var sender rpirf.RFDevice

@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/core/log"
 )
 
 type Config struct {
@@ -24,7 +24,7 @@ type Config struct {
 
 var Version string
 
-// Documentation of following parameters: github.com/MikMuellerDev/rpirf
+// Documentation of following parameters: github.com/smarthome-go/rpirf
 type Hardware struct {
 	HardwareEnabled     bool   `json:"hardwareEnabled"`
 	RFDevicePin         uint8  `json:"pin"` // The BCM pin to which a 433mhz sender is attached

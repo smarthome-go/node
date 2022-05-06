@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/config"
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/core/config"
+	"github.com/smarthome-go/node/core/log"
 )
 
 /*

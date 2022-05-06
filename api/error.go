@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
+	"github.com/smarthome-go/node/core/log"
 )
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {

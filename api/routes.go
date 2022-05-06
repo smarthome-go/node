@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/MikMuellerDev/smarthome-hw/core/log"
 	"github.com/gorilla/mux"
+	"github.com/smarthome-go/node/core/log"
 )
 
 type Response struct {
