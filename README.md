@@ -3,7 +3,7 @@
  
  ### Purpose
  The Smarthome server acts like a global hub to connect services, people and hardware together.
- Because the hub is a centralized server which should be able to run on any hardware, not just the Raspberry-Pi, a master-slave setup is used to control the power outlets accessible to smarthome users. In this setup, the Smarthome-hub acts as the master which is able to orchistrate the slaves, in this case the hardware-nodes.
+ Because the hub is a centralized server which should be able to run on any hardware, not just the Raspberry-Pi, a master-slave setup is used to control the power outlets which accessible to smarthome users. In this setup, the Smarthome-hub acts as the master which is able to orchistrate the slaves, in this case the hardware-nodes.
  
  The 433mhz sockets are controlled by a physical sender which is attached to each Raspberry-Pi, making it a hardware-node.
  The nodes can be registered in the smarthome server which is then able to manage the nodes, send power commands to them and monitor their health.
