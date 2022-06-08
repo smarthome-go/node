@@ -8,30 +8,32 @@
  The 433mhz sockets are controlled by a physical sender which is attached to each Raspberry-Pi, making it a hardware-node.
  The nodes can be registered in the smarthome server which is then able to manage the nodes, send power commands to them and monitor their health.
  
- *smarthome-hw* therefore provides a *REST-API* for making its hardware accessible to the Smarthome-hub.
+ Therefore, *node*  provides a *REST-API* for making its hardware accessible to the Smarthome-hub.
  
- For redundancy and increased reliability, a smarthome network should contain more than just one hardware-node.
- Redundancy, fallback and latency are handled by the Smarthome-hub which automatically detects if nodes fail.
+ For redundancy and increased reliability, a Smarthome network should contain more than just one hardware-node.
+ Redundancy, fallback and latency are handled by the Smarthome-hub which automatically detects if nodes fail or take too long to respond.
  
-Because a single node is not able to serve concurrent requests due to the limitations of the attached hardware, a locking system is implemented in the nodes.
-This lock is acquired when a hardware request ist made and released if the request finishes or is terminated abnormally.
+Because a single node is not able to serve concurrent requests (*due to the limitations of the attached hardware*), a locking system is implemented in node.
+This lock is acquired when a request is dispatched.
+The lock is always released when no longer required, regardless whether the request was successful or not.
 
-In order to provide a true concurrent, non-blocking access to the power outlets, the smarthome hub contains an internal queueing system which manages the order concurrent requests are executed in a blocking manner (one after the other).
+In order to provide a true concurrent, non-blocking access to the power outlets, the Smarthome-hub contains an internal queueing system which manages concurrent requests and executes them in a blocking manner (one after another).
 
 ![smarthome-hw logo](./icon/readme.png)
 
 ### Tokens
-In order to guarantee a safe communication between the `smarthome` server and the `smarthome-hw` server, a token is required.
-When this application is first started, a *random* token will be generated and printed to the server's logs (**but not to file**).
-#### Change token ↺
-In order to change the default token, use the provided bash script:
+In order to guarantee a safe communication between the Smarthome-hub and the node, a token is required.
+When this application is first started, a *random* token will be generated and printed to the node's logs (**not to the log file**).
+#### Change Token
+In order to change the default token, use the provided bash script which is located in the distribution directory.
 ```bash
 ./update_token.sh "old_token" "new_token"
 ```
 
 ### Api
-
-To send a power request, make a **POST** request to a similar url with a similar request body encoded as `application/json`
+To dispatch a power request, perform a **POST** request to a similar URL, using a similar request body.
+The host and the `switch` should be modified to suit your usecase.
+The payload has to be encoded as `application/json`, using `application/json` as the `Content-Type`.
 ```
 http://localhost:8081/power?token=smarthome
 ```
