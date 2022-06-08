@@ -1,4 +1,4 @@
-# Smarthome-hw
+# Node (formerly *Smarthome-hw*)
  Hardware interface for the Smarthome server
  
  ### Purpose
