@@ -1,7 +1,7 @@
 # Smarthome-hw
  Hardware interface for the Smarthome server
  
- ### What does it do?
+ ### Purpose
  The Smarthome server acts like a global hub to connect services, people and hardware together.
  Because the hub is a centralized server which should be able to run on any hardware, not just the Raspberry-Pi, a master-slave setup is used to control the power outlets accessible to smarthome users. In this setup, the Smarthome-hub acts as the master which is able to orchistrate the slaves, in this case the hardware-nodes.
  
@@ -20,7 +20,7 @@ In order to provide a true concurrent, non-blocking access to the power outlets,
 
 ![smarthome-hw logo](./icon/readme.png)
 
-### Token 🔑
+### Tokens
 In order to guarantee a safe communication between the `smarthome` server and the `smarthome-hw` server, a token is required.
 When this application is first started, a *random* token will be generated and printed to the server's logs (**but not to file**).
 #### Change token ↺
@@ -29,7 +29,7 @@ In order to change the default token, use the provided bash script:
 ./update_token.sh "old_token" "new_token"
 ```
 
-## Api
+### Api
 
 To send a power request, make a **POST** request to a similar url with a similar request body encoded as `application/json`
 ```
