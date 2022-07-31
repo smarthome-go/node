@@ -136,7 +136,9 @@ func createNewConfigFile() (Config, error) {
 				Pin: 1,
 			},
 		},
-		SwitchesIgnore: make([]string, 0),
+		SwitchesIgnore: []string{
+			"s3",
+		},
 	}
 	fileContent, err := json.MarshalIndent(config, "", "	")
 	if err != nil {

@@ -1,5 +1,5 @@
 # Node (formerly *Smarthome-hw*)
-**Version**: `0.2.0`
+**Version**: `0.3.0`
  Hardware interface for the Smarthome server
  
  ### Purpose
