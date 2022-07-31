@@ -12,8 +12,8 @@ import (
 var blocked bool
 
 var (
-	ErrNoCode   = errors.New("can not process request: switch has no code entry")
-	ErrBlocked  = errors.New("can not process request now: sender busy")
+	ErrNoSwitch = errors.New("can not process request: switch has no RF-code or GPIO-pin entry")
+	ErrBlocked  = errors.New("can not process request now: hardware busy")
 	ErrDisabled = errors.New("hardware is currently disabled")
 )
 
@@ -29,8 +29,9 @@ func SetPower(switchId string, powerOn bool) error {
 		return ErrDisabled
 	}
 	blocked = true
-	switches := config.GetConfig().Switches
-	for _, switchItem := range switches {
+	// Handle RF switchesRF first
+	switchesRF := config.GetConfig().SwitchesRF
+	for _, switchItem := range switchesRF {
 		if switchItem.Id == switchId {
 			var code int
 			if powerOn {
@@ -43,13 +44,26 @@ func SetPower(switchId string, powerOn bool) error {
 				blocked = false
 				return err
 			}
-			log.Trace(fmt.Sprintf("Successfully send code %d (Switch: %s PowerOn: %t)", code, switchId, powerOn))
+			log.Trace(fmt.Sprintf("Successfully send code `%d`. (Switch: %s | PowerOn: %t)", code, switchId, powerOn))
 			blocked = false
 			return nil
 		}
 	}
+	// Handle GPIO switches afterwards
+	switchesGPIO := config.GetConfig().SwitchesGPIO
+	for _, switchItem := range switchesGPIO {
+		if switchItem.Id == switchId {
+			blocked = false
+			log.Trace(fmt.Sprintf("Successfully handled switch GPIO. (Switch: %s | PowerOn: %t) ", switchId, powerOn))
+			return setPin(
+				switchItem.Pin,
+				powerOn,
+			)
+		}
+	}
+	log.Warn(fmt.Sprintf("Unregistered switch requested: switch `%s` was requested but not found.", switchId))
 	blocked = false
-	return ErrNoCode
+	return ErrNoSwitch
 }
 
 // Sends a code without any preproccessing

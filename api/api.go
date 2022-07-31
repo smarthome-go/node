@@ -23,8 +23,15 @@ type CodeRequest struct {
 	Code int `json:"code"`
 }
 
+// Used when requesting a list of available switches
+type SwitchListing struct {
+	SwitchesRF   []config.SwitchRF   `json:"switchesRF"`
+	SwitchesGPIO []config.SwitchGPIO `json:"switchesGPIO"`
+}
+
 // Returns general-purpose debugging information
 func debugInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(utils.GetDebugInfo()); err != nil {
 		log.Error("Encoding json failed: ", err.Error())
 	}
@@ -41,6 +48,7 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 
 // Can be used to update the token and generate a new hash
 func updateToken(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	var request UpdateTokenRequest
@@ -83,15 +91,20 @@ func updateToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Returns all switches, also their internal 433mhz codes
+// Returns all switches, also their internal 433mhz codes and GPIO pin numberrings
 func getSwitches(w http.ResponseWriter, r *http.Request) {
-	if err := json.NewEncoder(w).Encode(config.GetConfig().Switches); err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(SwitchListing{
+		SwitchesRF:   config.GetConfig().SwitchesRF,
+		SwitchesGPIO: config.GetConfig().SwitchesGPIO,
+	}); err != nil {
 		log.Error("Encoding json failed: ", err.Error())
 	}
 }
 
-// Main function used to communicate with the 433mhz hardware
+// Main function used to communicate with the hardware
 func setPower(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	// Decode the request body
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -132,7 +145,7 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 			log.Error("Encoding json failed: ", err.Error())
 		}
 		return
-	case firmware.ErrNoCode:
+	case firmware.ErrNoSwitch:
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
@@ -167,6 +180,7 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 
 // Accept a bare code and sends it (used for testing)
 func sendCode(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	// Decode the request body
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()

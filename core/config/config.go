@@ -14,15 +14,21 @@ import (
 	"github.com/smarthome-go/node/core/log"
 )
 
-type Config struct {
-	Port      uint16   `json:"port"`
-	NodeName  string   `json:"nodeName"`
-	TokenHash string   `json:"tokenHash"`
-	Hardware  Hardware `json:"hardware"`
-	Switches  []Switch `json:"switches"`
-}
-
 var Version string
+
+// The path were the config file is located
+const configPath = "./config.json"
+
+var config Config
+
+type Config struct {
+	Port         uint16       `json:"port"`
+	NodeName     string       `json:"nodeName"`
+	TokenHash    string       `json:"tokenHash"`
+	Hardware     Hardware     `json:"hardware"`
+	SwitchesRF   []SwitchRF   `json:"switchesRF"`
+	SwitchesGPIO []SwitchGPIO `json:"switchesGPIO"`
+}
 
 // Documentation of following parameters: github.com/smarthome-go/rpirf
 type Hardware struct {
@@ -34,16 +40,16 @@ type Hardware struct {
 	RFDeviceLength      uint8  `json:"contentLength"`
 }
 
-type Switch struct {
-	Id      string `json:"id"`
-	CodeOn  int    `json:"on"`
-	CodeOff int    `json:"off"`
+type SwitchRF struct {
+	Id      string `json:"id"`  // Id used by Smarthome server
+	CodeOn  int    `json:"on"`  // Code to send when the Smarthome server requests power ON
+	CodeOff int    `json:"off"` // Code to send when the Smarthome server requests power OFF
 }
 
-var config Config
-
-// The path were the config file is located
-const configPath = "./config.json"
+type SwitchGPIO struct {
+	Id  string `json:"id"`  // Id used by Smarthome server
+	Pin uint8  `json:"pin"` // The BCM pin to which a GPIO device is attached
+}
 
 // A dry-run of the `RadConfigFile()` method used in the healthtest
 func ProbeConfigFile() error {
@@ -115,11 +121,17 @@ func createNewConfigFile() (Config, error) {
 			RFDevicePulselength: 180,
 			RFDeviceLength:      24,
 		},
-		Switches: []Switch{
+		SwitchesRF: []SwitchRF{
 			{
 				Id:      "s1",
 				CodeOn:  0,
 				CodeOff: 0,
+			},
+		},
+		SwitchesGPIO: []SwitchGPIO{
+			{
+				Id:  "s2",
+				Pin: 1,
 			},
 		},
 	}
@@ -129,7 +141,7 @@ func createNewConfigFile() (Config, error) {
 		return Config{}, err
 	}
 	if err = ioutil.WriteFile("./config.json", fileContent, 0644); err != nil {
-		log.Error("Failed to write file to disk: ", err.Error())
+		log.Error("Failed to write config file to disk: ", err.Error())
 		return Config{}, err
 	}
 	return config, nil
