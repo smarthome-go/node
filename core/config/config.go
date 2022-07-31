@@ -47,8 +47,9 @@ type SwitchRF struct {
 }
 
 type SwitchGPIO struct {
-	Id  string `json:"id"`  // Id used by Smarthome server
-	Pin uint8  `json:"pin"` // The BCM pin to which a GPIO device is attached
+	Id     string `json:"id"`     // Id used by Smarthome server
+	Pin    uint8  `json:"pin"`    // The BCM pin to which a GPIO device is attached
+	Invert bool   `json:"invert"` // Whether the power request should be treated in an inverted manner (mainly useful for relay control)
 }
 
 // A dry-run of the `RadConfigFile()` method used in the healthtest

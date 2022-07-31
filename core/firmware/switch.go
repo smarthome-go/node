@@ -55,6 +55,14 @@ func SetPower(switchId string, powerOn bool) error {
 		if switchItem.Id == switchId {
 			blocked = false
 			log.Trace(fmt.Sprintf("Successfully handled switch GPIO. (Switch: %s | PowerOn: %t) ", switchId, powerOn))
+			// If the switch uses the `invert` setting, invert the power state
+			if switchItem.Invert {
+				return setPin(
+					switchItem.Pin,
+					!powerOn,
+				)
+			}
+			// Otherwise, use the normal setting
 			return setPin(
 				switchItem.Pin,
 				powerOn,
