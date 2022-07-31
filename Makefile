@@ -1,9 +1,9 @@
 appname := smarthome-hw
-version := v0.0.6-beta
+version := 0.1.0
 sources := $(wildcard *.go)
 
 build = mkdir -p smarthome-hw-bin && cp -r dist/* smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
-tar = mkdir -p build && tar -cvzf ./$(appname)_$(version)_$(1)_$(2).tar.gz smarthome-hw-bin && mv $(appname)_$(version)_$(1)_$(2).tar.gz build
+tar = mkdir -p build && tar -cvzf ./$(appname)_v$(version)_$(1)_$(2).tar.gz smarthome-hw-bin && mv $(appname)_v$(version)_$(1)_$(2).tar.gz build
 
 .PHONY: all linux
 
