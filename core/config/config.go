@@ -22,12 +22,13 @@ const configPath = "./config.json"
 var config Config
 
 type Config struct {
-	Port         uint16       `json:"port"`
-	NodeName     string       `json:"nodeName"`
-	TokenHash    string       `json:"tokenHash"`
-	Hardware     Hardware     `json:"hardware"`
-	SwitchesRF   []SwitchRF   `json:"switchesRF"`
-	SwitchesGPIO []SwitchGPIO `json:"switchesGPIO"`
+	Port           uint16       `json:"port"`
+	NodeName       string       `json:"nodeName"`
+	TokenHash      string       `json:"tokenHash"`
+	Hardware       Hardware     `json:"hardware"`
+	SwitchesRF     []SwitchRF   `json:"switchesRF"`
+	SwitchesGPIO   []SwitchGPIO `json:"switchesGPIO"`
+	SwitchesIgnore []string     `json:"switchesIgnore"`
 }
 
 // Documentation of following parameters: github.com/smarthome-go/rpirf
@@ -135,6 +136,7 @@ func createNewConfigFile() (Config, error) {
 				Pin: 1,
 			},
 		},
+		SwitchesIgnore: make([]string, 0),
 	}
 	fileContent, err := json.MarshalIndent(config, "", "	")
 	if err != nil {

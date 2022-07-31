@@ -69,6 +69,15 @@ func SetPower(switchId string, powerOn bool) error {
 			)
 		}
 	}
+	// Check if the missing switch is ignored
+	switchesIgnore := config.GetConfig().SwitchesIgnore
+	for _, switchItem := range switchesIgnore {
+		if switchItem == switchId {
+			log.Debug(fmt.Sprintf("Skipping switch `%s`: switch is ignored", switchId))
+			blocked = false
+			return nil
+		}
+	}
 	log.Warn(fmt.Sprintf("Unregistered switch requested: switch `%s` was requested but not found.", switchId))
 	blocked = false
 	return ErrNoSwitch
