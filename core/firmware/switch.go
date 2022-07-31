@@ -19,7 +19,10 @@ var (
 
 // If the sender's hardware is not blocked, the code corresponding to the function's input is sent
 // Returns an error if the sender is uninitialized or the switch has no entry in the config file
-func SetPower(switchId string, powerOn bool) error {
+func SetPower(
+	switchId string,
+	powerOn bool,
+) error {
 	if blocked {
 		log.Trace("Can not send code right now: the sender is currently busy")
 		return ErrBlocked
@@ -39,7 +42,10 @@ func SetPower(switchId string, powerOn bool) error {
 			} else {
 				code = switchItem.CodeOff
 			}
-			if err := sender.Send(code); err != nil {
+			if err := sendCode(
+				code,
+				config.GetConfig().Hardware,
+			); err != nil {
 				log.Error("Failed to send code: ", err.Error())
 				blocked = false
 				return err
@@ -94,7 +100,10 @@ func SendCode(code int) error {
 		return ErrDisabled
 	}
 	blocked = true
-	if err := sender.Send(code); err != nil {
+	if err := sendCode(
+		code,
+		config.GetConfig().Hardware,
+	); err != nil {
 		log.Error("Failed to send code: ", err.Error())
 		blocked = false
 		return err

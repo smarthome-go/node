@@ -124,9 +124,14 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 		request.Switch,
 		request.PowerOn,
 	)
+
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	switch err {
 	case firmware.ErrBlocked:
-		w.WriteHeader(http.StatusLocked)
+		w.WriteHeader(http.StatusServiceUnavailable)
 		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently blocked",
@@ -199,7 +204,7 @@ func sendCode(w http.ResponseWriter, r *http.Request) {
 	err := firmware.SendCode(request.Code)
 	switch err {
 	case firmware.ErrBlocked:
-		w.WriteHeader(http.StatusLocked)
+		w.WriteHeader(http.StatusServiceUnavailable)
 		if err := json.NewEncoder(w).Encode(Response{
 			Success: false,
 			Message: "currently blocked",

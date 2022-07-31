@@ -8,11 +8,12 @@ import (
 	"github.com/smarthome-go/rpirf"
 )
 
-var sender rpirf.RFDevice
-
-func Init() error {
-	config := config.GetConfig().Hardware
-	device, err := rpirf.NewRF(
+func sendCode(
+	code int,
+	config config.Hardware,
+) error {
+	// Initialize the sender
+	sender, err := rpirf.NewRF(
 		config.RFDevicePin,
 		config.RFDeviceProtocol,
 		config.RFDeviceRepeat,
@@ -23,15 +24,29 @@ func Init() error {
 		log.Error("Failed to initialize RFDevice: ", err.Error())
 		return err
 	}
-	sender = device
-	log.Info(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
-	return nil
-}
-
-func Free() error {
-	if err := sender.Cleanup(); err != nil {
-		log.Error("Failed to free sender: ", err.Error())
+	log.Trace(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
+	// Send the code
+	if err := sender.Send(code); err != nil {
 		return err
 	}
-	return nil
+	// Free the sender's GPIO device
+	return sender.Cleanup()
+}
+
+func TestSender(config config.Hardware) error {
+	// Initialize the sender
+	sender, err := rpirf.NewRF(
+		config.RFDevicePin,
+		config.RFDeviceProtocol,
+		config.RFDeviceRepeat,
+		config.RFDevicePulselength,
+		config.RFDeviceLength,
+	)
+	if err != nil {
+		log.Error("Failed to initialize RFDevice: ", err.Error())
+		return err
+	}
+	log.Info(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
+	// Free the sender's GPIO device
+	return sender.Cleanup()
 }
