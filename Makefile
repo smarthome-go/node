@@ -1,5 +1,5 @@
 appname := smarthome-hw
-version := 0.1.0
+version := 0.2.0
 sources := $(wildcard *.go)
 
 build = mkdir -p smarthome-hw-bin && cp -r dist/* smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
@@ -13,8 +13,6 @@ all:	linux
 # Update the current version in all locations
 version:
 	python3 update_version.py
-	cd web && npm i
-
 
 # Prepares everything for a version-release
 # In order to publish the release to Github, run `make gh-release

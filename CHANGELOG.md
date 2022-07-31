@@ -1,15 +1,16 @@
-## Changelog for v0.1.0
+## Changelog for v0.2.0
 
 ### Generic GPIO devices
-- Added support for generic GPIO devices
-- Alongside the preexisting 433mhz hardware, you can now leverage the power of any GPIO pin to be controllable via Smarthome
+- Added the `invert` setting to GPIO hardware which internally inverts every power request
+- This means an `on` will be changed to a `off` and the other way around
+- This setting is especially useful for controlling GPIO-relays
 
 The new configuration file looks like this:
 ```json
 {
 	"port": 8081,
 	"nodeName": "localhost",
-	"tokenHash": "$2a$05$T9NsGTrr847RI3yianF90Oi7PxUxANUybxGjSDgtlw3g6HI44xRbO",
+	"tokenHash": "$2a$05$/c/qAd6gfSh0HSXuQTH4EOiEWfqarjze/y4UdlLOdZFgqua.KUxZe",
 	"hardware": {
 		"hardwareEnabled": false,
 		"pin": 0,
@@ -28,7 +29,8 @@ The new configuration file looks like this:
 	"switchesGPIO": [
 		{
 			"id": "s2",
-			"pin": 1
+			"pin": 1,
+			"invert": false
 		}
 	]
 }
