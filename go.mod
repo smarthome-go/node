@@ -15,3 +15,5 @@ require (
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 )
+
+replace github.com/smarthome-go/rpirf => ../rpirf/

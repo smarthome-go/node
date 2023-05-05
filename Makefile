@@ -1,5 +1,5 @@
 appname := smarthome-hw
-version := 0.3.1
+version := 0.4.0
 sources := $(wildcard *.go)
 
 build = mkdir -p smarthome-hw-bin && cp -r dist/* smarthome-hw-bin && GOOS=$(1) GOARCH=$(2) go build -o ./smarthome-hw-bin/$(appname)$(3) $(4)
