@@ -17,7 +17,7 @@ func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 
 	// Healthcheck used by uptime-monitoring services, for example Uptime-Kuma
-	r.HandleFunc("/health", healthCheck).Methods("GET")
+	r.HandleFunc("/health", AuthRequired(healthCheck)).Methods("GET")
 
 	r.HandleFunc("/debug", AuthRequired(debugInfo)).Methods("GET")
 	r.HandleFunc("/switches", AuthRequired(getSwitches)).Methods("GET")

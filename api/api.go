@@ -120,6 +120,7 @@ func setPower(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
 	err := firmware.SetPower(
 		request.Switch,
 		request.PowerOn,
