@@ -1,4 +1,4 @@
-## Changelog for v0.4.0
+## Changelog for v0.5.0
 
 ### Bugfixes
 

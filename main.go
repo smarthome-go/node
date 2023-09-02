@@ -18,7 +18,7 @@ func main() {
 		log.Error("Failed to read config file: ", err.Error())
 		return
 	}
-	config.Version = "0.4.0"
+	config.Version = "0.5.0"
 	log.Debug("Successfully read config file")
 
 	r := api.NewRouter()
