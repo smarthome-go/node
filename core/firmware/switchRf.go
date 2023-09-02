@@ -8,45 +8,57 @@ import (
 	"github.com/smarthome-go/rpirf"
 )
 
+var sender rpirf.RFDevice
+
+func Init(config config.Hardware) error {
+	var output rpirf.HardwareOutput
+
+	if config.UseGpioCdev {
+		outputTemp, err := rpirf.NewCharacterDev(
+			*config.GpioCdevChip,
+			config.RFDevicePin,
+		)
+
+		if err != nil {
+			log.Error("Failed to initialize CDEV RFDevice: ", err.Error())
+			return err
+		}
+
+		output = outputTemp
+	} else {
+		outputTemp, err := rpirf.NewRaspberryPi(
+			uint(config.RFDevicePin),
+		)
+
+		if err != nil {
+			log.Error("Failed to initialize RaspberryPi RFDevice: ", err.Error())
+			return err
+		}
+
+		output = outputTemp
+	}
+
+	// Initialize the sender
+	sender = rpirf.NewRF(
+		output,
+		config.RFDeviceProtocol,
+		config.RFDeviceRepeat,
+		config.RFDevicePulselength,
+		config.RFDeviceLength,
+	)
+
+	log.Trace(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
+	return nil
+}
+
+func Cleanup() error {
+	return sender.Cleanup()
+}
+
 func sendCode(
 	code int,
 	config config.Hardware,
 ) error {
-	// Initialize the sender
-	sender, err := rpirf.NewRF(
-		config.RFDevicePin,
-		config.RFDeviceProtocol,
-		config.RFDeviceRepeat,
-		config.RFDevicePulselength,
-		config.RFDeviceLength,
-	)
-	if err != nil {
-		log.Error("Failed to initialize RFDevice: ", err.Error())
-		return err
-	}
-	log.Trace(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
 	// Send the code
-	if err := sender.Send(code); err != nil {
-		return err
-	}
-	// Free the sender's GPIO device
-	return sender.Cleanup()
-}
-
-func TestSender(config config.Hardware) error {
-	// Initialize the sender
-	sender, err := rpirf.NewRF(
-		config.RFDevicePin,
-		config.RFDeviceProtocol,
-		config.RFDeviceRepeat,
-		config.RFDevicePulselength,
-		config.RFDeviceLength,
-	)
-	if err != nil {
-		log.Error("Failed to initialize RFDevice: ", err.Error())
-		return err
-	}
-	log.Info(fmt.Sprintf("RFDevice (433mhz) on pin %d initialized. RFDevice repeat: %d", config.RFDevicePin, config.RFDeviceRepeat))
-	// Free the sender's GPIO device
-	return sender.Cleanup()
+	return sender.Send(code)
 }

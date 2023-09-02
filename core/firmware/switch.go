@@ -3,13 +3,14 @@ package firmware
 import (
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/smarthome-go/node/core/config"
 	"github.com/smarthome-go/node/core/log"
 )
 
 // Acts as a global lock, in this case if a code is being sent in order to prevent interrupts
-var blocked bool
+var blocked sync.Mutex
 
 var (
 	ErrNoSwitch = errors.New("can not process request: switch has no RF-code or GPIO-pin entry")
@@ -23,15 +24,14 @@ func SetPower(
 	switchId string,
 	powerOn bool,
 ) error {
-	if blocked {
-		log.Trace("Can not send code right now: the sender is currently busy")
-		return ErrBlocked
-	}
+	blocked.Lock()
+	defer blocked.Unlock()
+
 	if !config.GetConfig().Hardware.HardwareEnabled {
 		log.Trace("Can not send code right now: the hardware is currently disabled")
 		return ErrDisabled
 	}
-	blocked = true
+
 	// Handle RF switchesRF first
 	switchesRF := config.GetConfig().SwitchesRF
 	for _, switchItem := range switchesRF {
@@ -47,19 +47,17 @@ func SetPower(
 				config.GetConfig().Hardware,
 			); err != nil {
 				log.Error("Failed to send code: ", err.Error())
-				blocked = false
 				return err
 			}
 			log.Trace(fmt.Sprintf("Successfully send code `%d`. (Switch: %s | PowerOn: %t)", code, switchId, powerOn))
-			blocked = false
 			return nil
 		}
 	}
+
 	// Handle GPIO switches afterwards
 	switchesGPIO := config.GetConfig().SwitchesGPIO
 	for _, switchItem := range switchesGPIO {
 		if switchItem.Id == switchId {
-			blocked = false
 			log.Trace(fmt.Sprintf("Successfully handled switch GPIO. (Switch: %s | PowerOn: %t) ", switchId, powerOn))
 			// If the switch uses the `invert` setting, invert the power state
 			if switchItem.Invert {
@@ -80,34 +78,29 @@ func SetPower(
 	for _, switchItem := range switchesIgnore {
 		if switchItem == switchId {
 			log.Debug(fmt.Sprintf("Skipping switch `%s`: switch is ignored", switchId))
-			blocked = false
 			return nil
 		}
 	}
 	log.Warn(fmt.Sprintf("Unregistered switch requested: switch `%s` was requested but not found.", switchId))
-	blocked = false
 	return ErrNoSwitch
 }
 
 // Sends a code without any preproccessing
 func SendCode(code int) error {
-	if blocked {
-		log.Trace("Can not send code right now: the sender is currently busy")
-		return ErrBlocked
-	}
+	blocked.Lock()
+	defer blocked.Unlock()
+
 	if !config.GetConfig().Hardware.HardwareEnabled {
 		log.Trace("Can not send code right now: the hardware is currently disabled")
 		return ErrDisabled
 	}
-	blocked = true
 	if err := sendCode(
 		code,
 		config.GetConfig().Hardware,
 	); err != nil {
 		log.Error("Failed to send code: ", err.Error())
-		blocked = false
 		return err
 	}
-	blocked = false
+
 	return nil
 }

@@ -33,12 +33,14 @@ type Config struct {
 
 // Documentation of following parameters: github.com/smarthome-go/rpirf
 type Hardware struct {
-	HardwareEnabled     bool   `json:"hardwareEnabled"`
-	RFDevicePin         uint8  `json:"pin"` // The BCM pin to which a 433mhz sender is attached
-	RFDeviceProtocol    uint8  `json:"protocol"`
-	RFDeviceRepeat      uint8  `json:"repeat"`
-	RFDevicePulselength uint16 `json:"pulseLength"`
-	RFDeviceLength      uint8  `json:"contentLength"`
+	UseGpioCdev         bool    `json:"useGpioCdev"`
+	GpioCdevChip        *string `json:"gpioCdevChip"`
+	HardwareEnabled     bool    `json:"hardwareEnabled"`
+	RFDevicePin         int     `json:"pin"` // The BCM pin to which a 433mhz sender is attached
+	RFDeviceProtocol    uint8   `json:"protocol"`
+	RFDeviceRepeat      uint8   `json:"repeat"`
+	RFDevicePulselength uint16  `json:"pulseLength"`
+	RFDeviceLength      uint8   `json:"contentLength"`
 }
 
 type SwitchRF struct {
@@ -81,7 +83,7 @@ func ReadConfigFile() error {
 		configTemp, errCreate := createNewConfigFile()
 		if errCreate != nil {
 			log.Error("Failed to read config file: ", err.Error())
-			log.Fatal("Failed to initialize config: could not read or create a config file: ", errCreate.Error())
+			log.Error("Failed to initialize config: could not read or create a config file: ", errCreate.Error())
 			return err
 		}
 		config = configTemp
@@ -97,6 +99,12 @@ func ReadConfigFile() error {
 		log.Error(fmt.Sprintf("Failed to parse config file at `%s` into Config struct: %s", configPath, err.Error()))
 		return err
 	}
+
+	// validate the semantic correctness of the config file
+	if configFile.Hardware.UseGpioCdev == (configFile.Hardware.GpioCdevChip == nil) {
+		return fmt.Errorf("Invalid CDEV configuration: option `use cdev` must correspond to value `cdev chip`")
+	}
+
 	config = configFile
 	return nil
 }
@@ -116,6 +124,8 @@ func createNewConfigFile() (Config, error) {
 		NodeName:  "localhost",
 		TokenHash: hash,
 		Hardware: Hardware{
+			UseGpioCdev:         false,
+			GpioCdevChip:        nil,
 			HardwareEnabled:     false,
 			RFDevicePin:         0,
 			RFDeviceProtocol:    1,
@@ -158,13 +168,13 @@ func WriteConfig() error {
 	config := config
 	err := json.Unmarshal(jsonBlob, &config)
 	if err != nil {
-		log.Fatal("Error during unmarshal: ", err.Error())
+		log.Error("Error during unmarshal: ", err.Error())
 		return err
 	}
 	configJson, _ := json.MarshalIndent(&config, "", "    ")
 	err = ioutil.WriteFile("./config.json", configJson, 0644)
 	if err != nil {
-		log.Fatal("Error writing new token hash to config.json: ", err.Error())
+		log.Error("Error writing new token hash to config.json: ", err.Error())
 		return err
 	}
 	log.Debug("Written to config.json")
